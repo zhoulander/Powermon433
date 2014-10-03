@@ -130,6 +130,7 @@ To use an RF69 / RFM69W / RFM69HW / RFM69CW / RFM69HCW connect:
 	DIO2 → D8
 	ANA  → Antenna (164.5 mm wire as simple ¼-wave monopole)
 	GND  → GND
+	3.3V → 3V3
 
 With the RF69 module, a frequency of 433.845MHz is tuned with a 50khz receive
 bandwidth. My module can receive data on this frequency right down to a 1.3Khz
