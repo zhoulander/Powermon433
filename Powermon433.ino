@@ -7,8 +7,11 @@
  
  Original OOK interrupt and decoder based on jeelib "ookRelay2" project https://github.com/jcw/jeelib
  Protocol decoding by "redgreen" https://github.com/merbanan/rtl_433
- via Stewart Russell's blog http://scruss.com/
+ via Stewart Russell's blog 
+ http://scruss.com/blog/2013/12/03/blueline-black-decker-power-monitor-rf-packets/
  Additional work and porting to ATmega by Bryan Mayland
+ General messing about and reformatting by Stewart C. Russell, scruss.com
+ 
  */
 #include <util/atomic.h>
 #include "rf69_ook.h"
@@ -20,7 +23,8 @@
 #define DPIN_LED            9
 
 // The default ID of the transmitter to decode/encode from/to
-#define DEFAULT_TX_ID 0xfdcc
+// #define DEFAULT_TX_ID 0xfdcc
+#define DEFAULT_TX_ID 0xfff8
 
 // If defined will dump all the encoded RX data, and partial decode fails
 #define DUMP_RX
