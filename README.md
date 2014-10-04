@@ -153,6 +153,8 @@ Use a 164.398mm wire antenna for quarter wavelength monopole.
 2. The program will switch to reading whichever Power Monitor sensor
    had its button pressed most recently. There should be a way of
    locking to a single sensor.
+3. Energy is stored as an unsigned (short) int, so rolls over at
+   65536 Wh. This should be handled using an unsigned long.
 
 ## TODO ##
 
