@@ -34,15 +34,23 @@ transmitter is identical) installation is assumed.
    messages scroll by, a couple a minute or so.
 3. Go out to your meter, and briefly press the button on the monitor
    sensor. The red LED in the battery window should start to flash.
-4. You *should* see a **NEW DEVICE ID** message in the output,
+4. You *should* see a **New ID** message in the output,
    followed by a hexadecimal number. The CRC ERR messages should soon
    be replaced with energy (Wh), instantaneous power (W) and outside
-   temperature readings.
+   temperature readings. Energy and temperature take a couple of
+   minutes to come in, so will start at zero.
 5. (Optional, recommended) Note down the device ID, and change the
    `#define DEFAULT_TX_ID 0xfff8` line in the Arduino sketch to use
    your device ID. This way, your installation will default to
    decoding your meter, and won't need the monitor button pressed
-   every time you restart your Arduino.
+   every time you restart your Arduino. Once you're satisfied that you
+   have your ID set correctly, you may wish to ‘lock’ the ID by
+   uncommenting the `#define TX_ID_LOCK` line and re-uploading the
+   sketch to your Arduino.
+
+If you're having difficulties, Bryan's original sketch prints more
+diagnostic messages than this one. If you are using a wire antenna,
+check it's the right length …
 
 ## Stewart's Receiver Notes ##
 
@@ -159,18 +167,11 @@ Use a 164.398mm wire antenna for quarter wavelength monopole.
 
 ## BUGS ##
 
-2. The program will switch to reading whichever Power Monitor sensor
-   had its button pressed most recently. There should be a way of
-   locking to a single sensor.
 3. Energy is stored as an unsigned (short) int, so rolls over at
    65536 Wh. This should be handled using an unsigned long.
 
 ## TODO ##
 
-1. A more useful logging format.
-2. Include the real time, perhaps by reading it over serial using
-   [PaulStoffregen/Time](https://github.com/PaulStoffregen/Time
-   "PaulStoffregen/Time"). I'm not wild about adding an RTC.
 3. Allow a °C/°F display switch, for those who still believe that
    D. G. Farenheit's oxter is a suitable basis for temperature
    reference.

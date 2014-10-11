@@ -263,14 +263,11 @@ static void decodeRxPacket(void)
 
 static void rxSetup(void)
 {
-#if defined(DPIN_OOK_RX)
   setupPinChangeInterrupt();
-#endif
 }
 
 static void ookRx(void)
 {
-#if defined(DPIN_OOK_RX)
   uint16_t v;
   ATOMIC_BLOCK(ATOMIC_FORCEON)
   {
@@ -307,7 +304,6 @@ static void ookRx(void)
     Serial.println(F("] Missed"));
     g_RxLast = millis();
   }
-#endif // DPIN_OOK_RX
 }
 
 void setup() {
