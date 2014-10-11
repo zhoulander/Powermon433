@@ -7,6 +7,6 @@ typedef struct {
 } coord_t;
 
 int fudged_f_to_c(int f);
-int temp_lerp(coord_t * temp_tab, uint8_t x, int n);
+int temp_lerp(uint8_t x);
 
 #endif  //__TEMP_LERP_H__

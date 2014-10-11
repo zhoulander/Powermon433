@@ -1,13 +1,13 @@
 /* temp_lerp.cpp - scruss, 2014-10-06 
-
-  int temp_lerp(temp_tab, uint8_t x, TEMP_TABSIZE);
-    for input x (0..255) returns equivalent °F value
-
-  int fudged_f_to_c(int f);
-    special conversion factor from °F to °C;
-    *** NOT FOR GENERAL USE ***
-
-*/
+ 
+ int temp_lerp(uint8_t x);
+ for input x (0..255) returns equivalent °F value
+ 
+ int fudged_f_to_c(int f);
+ special conversion factor from °F to °C;
+ *** NOT FOR GENERAL USE ***
+ 
+ */
 
 
 #include <Arduino.h>
@@ -15,78 +15,77 @@
 
 #define TEMP_TABSIZE 22
 
-/* should probably look at PROGMEM, but that's hard */
 static coord_t temp_tab[TEMP_TABSIZE] = {
-  {
-    0, -49  }
+  {   
+    0, -49      }
+  ,
+  {   
+    5, -45      }
   ,
   {
-    5, -45  }
+    10, -42      }
   ,
   {
-    10, -42  }
+    20, -22      }
   ,
   {
-    20, -22  }
+    30, -7      }
   ,
   {
-    30, -7  }
+    40, 5      }
   ,
   {
-    40, 5  }
+    50, 16      }
   ,
   {
-    50, 16  }
+    70, 34      }
   ,
   {
-    70, 34  }
+    80, 42      }
   ,
   {
-    80, 42  }
+    90, 49      }
   ,
   {
-    90, 49  }
+    100, 57      }
   ,
   {
-    100, 57  }
+    130, 78      }
   ,
   {
-    130, 78  }
+    150, 94      }
   ,
   {
-    150, 94  }
+    152, 96      }
   ,
   {
-    152, 96  }
+    154, 97      }
   ,
   {
-    154, 97  }
+    158, 101      }
   ,
   {
-    158, 101  }
+    160, 102      }
   ,
   {
-    160, 102  }
+    176, 118      }
   ,
   {
-    176, 118  }
+    180, 121      }
   ,
   {
-    180, 121  }
+    184, 126      }
   ,
   {
-    184, 126  }
+    185, 127      }
   ,
   {
-    185, 127  }
-  ,
-  {
-    255, 127  }
+    255, 127      }
 };
 
-int temp_lerp(coord_t * temp_tab, uint8_t x, int n) {
+int temp_lerp(uint8_t x) {
   int i;
-  for (i = 0; i < n - 1; i++) {
+  for (i = 0; i < TEMP_TABSIZE - 1; i++) {
     if (temp_tab[i].x <= x && temp_tab[i + 1].x >= x)
       return temp_tab[i].y + (temp_tab[i + 1].y - temp_tab[i].y) * (x - temp_tab[i].x) / (temp_tab[i + 1].x -
         temp_tab[i].x);
@@ -97,7 +96,7 @@ int temp_lerp(coord_t * temp_tab, uint8_t x, int n) {
 int fudged_f_to_c(int f) {
   /****************************************************
    * ###       ####  ###########   
-   *  ###   rollover.c    ##    ####   ####  THIS IS ** NOT **
+   *  ###       ##    ####   ####  THIS IS ** NOT **
    *  ####      ##    ###    ####  GENERAL-PURPOSE °F
    *  ####      #     ###    ####  TO °C CONVERSION
    *  #####     #     ###    ###   CODE !!!
@@ -124,4 +123,6 @@ int main(int argc, char **argv) {
  }
  }
  */
+
+
 
