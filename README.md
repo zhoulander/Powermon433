@@ -13,7 +13,8 @@ usage instructions.
 
 Tested with:
 
-* OSEPP (Arduino) Fio + RFM69W (3.3 V logic, FTDI serial interface required)
+* OSEPP (Arduino) Fio + RFM69W (3.3 V logic, FTDI serial interface
+  required)
 * Arduino Uno + RX3400-LF-based superheterodyne receiver (5 V logic)
 * Arduino Uno + Parallax 433 MHz RF Transceiver (#27982) (5 V logic)
 
@@ -23,11 +24,11 @@ transmitter is identical) installation is assumed.
 ## Quick Start ##
 
 1. Wire up one of the “Tested with” options above, according to the
-   receiver notes below. The Arduino +
-   superhet receiver option is cheapest (but has a minor fiddle with trimming
-   the wire antenna to length), the Arduino + Parallax transceiver is
-   simplest (but expensive), and the Fio + RFM69W is fiddliest,
-   mid-priced, but has a lovely robust receiver.
+   receiver notes below. The Arduino + superhet receiver option is
+   cheapest (but has a minor fiddle with trimming the wire antenna to
+   length), the Arduino + Parallax transceiver is simplest (but
+   expensive), and the Fio + RFM69W is fiddliest, mid-priced, but has
+   a lovely robust receiver.
 2. Upload the included sketch, and open the serial monitor or serial
    terminal (38400, 8N1). You should soon see some **CRC ERR**
    messages scroll by, a couple a minute or so.
@@ -45,7 +46,8 @@ transmitter is identical) installation is assumed.
 
 ## Stewart's Receiver Notes ##
 
-The RFM69 receiver boards described by Bryan (see below) are lovely, but:
+The RFM69 receiver boards described by Bryan (see below) are lovely,
+but:
 
 1. They're 3.3 V logic
 2. They use 2 mm pitch headers instead of the “standard” 2.54 mm
@@ -57,7 +59,8 @@ receiver board.
 A superheterodyne board:
 
 * is cheap
-* has one decently-sized chip on board (the RX3400-LF is 24-pin SSOP)
+* has one decently-sized chip on board (the RX3400-LF is 24-pin SSOP),
+  which may be covered in a metal shield
 * has a crystal (typically 6.773 MHz for 433.92 MHz RX frequency)
 * has no obvious coils or tuning chokes
 
@@ -115,9 +118,10 @@ If time is money for you, the Parallax might be a good option.
 Bryan's Receiver Notes
 ----------------------
 
-Data line from a superheterodyne receiver should in run to pin Digital 8.
-I've tried using a superregenerative receiver but the sensitivity was too low
-to receieve anything. Your results may be better than mine.
+Data line from a superheterodyne receiver should in run to pin
+Digital 8.  I've tried using a superregenerative receiver but the
+sensitivity was too low to receieve anything. Your results may be
+better than mine.
 
 To use an RF69 / RFM69W / RFM69HW / RFM69CW / RFM69HCW connect:
 
@@ -132,24 +136,29 @@ To use an RF69 / RFM69W / RFM69HW / RFM69CW / RFM69HCW connect:
 	GND  → GND
 	3.3V → 3V3
 
-With the RF69 module, a frequency of 433.845MHz is tuned with a 50khz receive
-bandwidth. My module can receive data on this frequency right down to a 1.3Khz
-bandwidth so I am pretty sure this is accurate. The AFC and FEI blocks don't
-appear to work no matter where I trigger them, so I can't use them to adjust
-the frequency. Perhaps they only work on FSK and this is ASK/OOK.
+With the RF69 module, a frequency of 433.845MHz is tuned with a 50khz
+receive bandwidth. My module can receive data on this frequency right
+down to a 1.3Khz bandwidth so I am pretty sure this is accurate. The
+AFC and FEI blocks don't appear to work no matter where I trigger
+them, so I can't use them to adjust the frequency. Perhaps they only
+work on FSK and this is ASK/OOK.
 
-Standard auto LNA gain and 'peak' mode OOK threshold are used which does a good
-job of adjusting receiver sensitivity. The module registers are assumed to be
-at their default values on startup, so be sure to reset the module if switching
-from code that uses packet or FSK mode.
+Standard auto LNA gain and 'peak' mode OOK threshold are used which
+does a good job of adjusting receiver sensitivity. The module
+registers are assumed to be at their default values on startup, so be
+sure to reset the module if switching from code that uses packet or
+FSK mode.
  
 Use a 164.398mm wire antenna for quarter wavelength monopole.
 
+## ADDITIONAL NOTES ##
+
+1. The temperature decoding will not exactly match the display. (The
+   temperature sensor is wildly inaccurate anyway, as it's in a black
+   box often in full sun, and it can easily read +10°C over ambient.)
+
 ## BUGS ##
 
-1. The temperature decoding is not correct. (The temperature sensor is
-   wildly inaccurate anyway, as it's in a black box often in full sun,
-   and it can easily read +10°C over ambient.)
 2. The program will switch to reading whichever Power Monitor sensor
    had its button pressed most recently. There should be a way of
    locking to a single sensor.
@@ -159,6 +168,9 @@ Use a 164.398mm wire antenna for quarter wavelength monopole.
 ## TODO ##
 
 1. A more useful logging format.
-2. Decode the temperature better. I currently have a regression
-   equation based on readings from 10–32°C, but that doesn't quite
-   correlate with the displayed value.
+2. Include the real time, perhaps by reading it over serial using
+   [PaulStoffregen/Time](https://github.com/PaulStoffregen/Time
+   "PaulStoffregen/Time"). I'm not wild about adding an RTC.
+3. Allow a °C/°F display switch, for those who still believe that
+   D. G. Farenheit's oxter is a suitable basis for temperature
+   reference.
