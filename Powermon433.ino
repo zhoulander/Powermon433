@@ -47,7 +47,6 @@
 //#define TX_ID_LOCK
 
 static uint16_t g_TxId;
-static uint8_t g_TxCnt;
 
 static struct tagWireVal
 {
@@ -74,6 +73,20 @@ static int8_t g_RxTemperature;
 static uint8_t g_RxFlags;
 static uint16_t g_RxWatts;
 static uint16_t g_RxWattHours;
+
+// Watt-hour counter rolls over every 65.536 kWh, 
+// or roughly 2½ days of my use.
+// This should be good for > 4 GWh; enough for everyone ...
+static unsigned long g_TotalRxWattHours;
+// need this too
+static uint16_t g_PrevRxWattHours;
+
+// better stats on time between reports
+// delta is long as packets are appx ½ range of uint16_t
+// so we roll if we miss >2
+static unsigned long g_PrintTime_ms;
+static unsigned long g_PrevPrintTime_ms;
+static unsigned long g_PrintTimeDelta_ms;
 
 static bool g_RxDirty;
 static uint32_t g_RxLast;
@@ -227,7 +240,10 @@ static void decodePowermon(uint16_t val16)
     break;
 
   case OOK_PACKET_TOTAL:
+    g_PrevRxWattHours = g_RxWattHours;
     g_RxWattHours = val16;
+    // precent rollover through the power of unsigned arithmetic
+    g_TotalRxWattHours += (g_RxWattHours - g_PrevRxWattHours);
     break;
   }
 }
@@ -287,10 +303,17 @@ static void ookRx(void)
   // If it has been more than 250ms since the last receive, dump the data
   else if (g_RxDirty && (millis() - g_RxLast) > 250U)
   {
-    Serial.print(F("Timestamp_ms: ")); 
-    Serial.print(millis(), DEC); 
+
+    g_PrevPrintTime_ms = g_PrintTime_ms;
+    g_PrintTime_ms = millis();
+    g_PrintTimeDelta_ms = g_PrintTime_ms - g_PrevPrintTime_ms;
+
+    Serial.print(F("PrintDelta_ms: ")); 
+    Serial.print(g_PrintTimeDelta_ms, DEC); 
     Serial.print(F(" Energy_Wh: ")); 
     Serial.print(g_RxWattHours, DEC);
+    Serial.print(F(" Total_Energy_Wh: ")); 
+    Serial.print(g_TotalRxWattHours, DEC);
     Serial.print(F(" Power_W: ")); 
     Serial.print(g_RxWatts, DEC);
     Serial.print(F(" Temp_C: ")); 
@@ -299,9 +322,7 @@ static void ookRx(void)
     g_RxDirty = false;
   }
   else if (g_RxLast != 0 && (millis() - g_RxLast) > 32000U) { 
-    Serial.print(F("# [")); 
-    Serial.print(millis(), DEC); 
-    Serial.println(F("] Missed"));
+    Serial.println(F("# Missed Packet"));
     g_RxLast = millis();
   }
 }
@@ -318,12 +339,18 @@ void setup() {
   rxSetup();
 
   g_TxId = DEFAULT_TX_ID;
+  g_TotalRxWattHours = 0;
+  g_PrintTimeDelta_ms = 0;
+  g_PrintTime_ms = 0;
 }
 
 void loop()
 {
   ookRx();
 }
+
+
+
 
 
 
