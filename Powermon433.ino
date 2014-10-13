@@ -46,6 +46,15 @@
  */
 //#define TX_ID_LOCK
 
+/*
+ TEMPERATURE_F - 
+ Uncomment this #define if you believe in the power of
+ D. G. Farenheit's armpit, and want your temperature in °F.
+ Otherwise, you get °C, like you should.
+ [I'd include an option for K, but it doesn't fit into a byte.]
+ */
+//#define TEMPERATURE_F
+
 static uint16_t g_TxId;
 
 static struct tagWireVal
@@ -235,14 +244,18 @@ static void decodePowermon(uint16_t val16)
     break;
 
   case OOK_PACKET_TEMP:
+#if defined(TEMPERATURE_F)
+    g_RxTemperature = (int8_t)(temp_lerp(decoder.data[1]));
+#else
     g_RxTemperature = (int8_t)(fudged_f_to_c(temp_lerp(decoder.data[1])));
+#endif /* TEMPERATURE_F */
     g_RxFlags = decoder.data[0];
     break;
 
   case OOK_PACKET_TOTAL:
     g_PrevRxWattHours = g_RxWattHours;
     g_RxWattHours = val16;
-    // precent rollover through the power of unsigned arithmetic
+    // prevent rollover through the power of unsigned arithmetic
     g_TotalRxWattHours += (g_RxWattHours - g_PrevRxWattHours);
     break;
   }
@@ -304,19 +317,31 @@ static void ookRx(void)
   else if (g_RxDirty && (millis() - g_RxLast) > 250U)
   {
 
+    /*
+     track duration since last report
+     
+     If > ~31.8 s (318nn ms), we have missed a packet, 
+     and the instantaneous Power reading 
+     isn't continuous. 
+     */
     g_PrevPrintTime_ms = g_PrintTime_ms;
     g_PrintTime_ms = millis();
     g_PrintTimeDelta_ms = g_PrintTime_ms - g_PrevPrintTime_ms;
 
     Serial.print(F("PrintDelta_ms: ")); 
-    Serial.print(g_PrintTimeDelta_ms, DEC); 
-    Serial.print(F(" Energy_Wh: ")); 
-    Serial.print(g_RxWattHours, DEC);
+    Serial.print(g_PrintTimeDelta_ms, DEC);
+    // this can roll over, so don't print   
+    // Serial.print(F(" Energy_Wh: ")); 
+    // Serial.print(g_RxWattHours, DEC);  
     Serial.print(F(" Total_Energy_Wh: ")); 
     Serial.print(g_TotalRxWattHours, DEC);
     Serial.print(F(" Power_W: ")); 
     Serial.print(g_RxWatts, DEC);
-    Serial.print(F(" Temp_C: ")); 
+#if defined(TEMPERATURE_F)
+    Serial.print(F(" Temp_F: "));
+#else 
+    Serial.print(F(" Temp_C: "));
+#endif /* TEMPERATURE_F */ 
     Serial.println(g_RxTemperature, DEC);
 
     g_RxDirty = false;
@@ -348,6 +373,8 @@ void loop()
 {
   ookRx();
 }
+
+
 
 
 

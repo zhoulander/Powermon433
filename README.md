@@ -39,7 +39,7 @@ transmitter is identical) installation is assumed.
    be replaced with energy (Wh), instantaneous power (W) and outside
    temperature readings. Energy and temperature take a couple of
    minutes to come in, so will start at zero.
-5. (Optional, recommended) Note down the device ID, and change the
+5. (*Optional, recommended*) Note down the device ID, and change the
    `#define DEFAULT_TX_ID 0xfff8` line in the Arduino sketch to use
    your device ID. This way, your installation will default to
    decoding your meter, and won't need the monitor button pressed
@@ -47,6 +47,9 @@ transmitter is identical) installation is assumed.
    have your ID set correctly, you may wish to ‘lock’ the ID by
    uncommenting the `#define TX_ID_LOCK` line and re-uploading the
    sketch to your Arduino.
+6. (*Optional, at-best-tolerated*) If you *must* use °F, uncomment the
+   `#define TEMPERATURE_F` line. But don't blame me if you get haunted
+   by ghostly 18th century European oxter guff …
 
 If you're having difficulties, Bryan's original sketch prints more
 diagnostic messages than this one. If you are using a wire antenna,
@@ -161,17 +164,17 @@ Use a 164.398mm wire antenna for quarter wavelength monopole.
 
 ## ADDITIONAL NOTES ##
 
-1. The temperature decoding will not exactly match the display. (The
-   temperature sensor is wildly inaccurate anyway, as it's in a black
-   box often in full sun, and it can easily read +10°C over ambient.)
+The temperature decoding may not exactly match the display, mainly
+because we're using a simple lookup table and interpolating
+values. The temperature sensor can be inaccurate anyway, as it's in a
+black box often in full sun, and it will often read +10°C over
+ambient.
 
 ## BUGS ##
 
-3. Energy is stored as an unsigned (short) int, so rolls over at
-   65536 Wh. This should be handled using an unsigned long.
+1. Yes, I'm sure there are.
 
 ## TODO ##
 
-3. Allow a °C/°F display switch, for those who still believe that
-   D. G. Farenheit's oxter is a suitable basis for temperature
-   reference.
+1. Uninitialized values output 0 rather than “NaN” or something more
+   appropriate.
