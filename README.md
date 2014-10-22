@@ -162,6 +162,22 @@ FSK mode.
  
 Use a 164.398mm wire antenna for quarter wavelength monopole.
 
+## RUNNING AS A DATA LOGGER ##
+
+Included in this package is a not-very-well-thought-out example script
+`loop.sh` you can run to log data from your power monitor. Check the
+comments for requirements.
+
+### THE ARDUINO RESET ####
+
+Arduino boards reset if a new serial connection is made. It's by
+design more than anything else, but is annoying if you're making many
+short logging runs. In theory, for an Arduino Uno, you can put a 10 µF
+capacitor across, but I haven't had much success with that.
+
+As I'm only logging a file once a day, it's not so much of a problem
+for me.
+
 ## ADDITIONAL NOTES ##
 
 The temperature decoding may not exactly match the display, mainly
