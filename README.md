@@ -1,5 +1,20 @@
-Powermon433
-===========
+Powermon433MQTT
+===============
+
+Quick and dirty modification to Stewart C. Russell's Powermon433 to add MQTT and configuration payloads for Home Assistant.
+Forked from https://github.com/scruss/Powermon433
+
+Edit ```powermonmqtt.py``` to put in your own MQTT broker address and serial port of your Arduino.
+
+Edit ```Powermon433MQTT.ino``` to hardcode your own sensor ID.
+
+1. Compile and upload sketch to your Arduino
+2. Find your sensor ID by pressing the Powerline button
+3. Recompile your sketch with hardcoded ID
+4. Plug in Arduino to a Raspberry Pi
+5. Edit ```powermonmqtt.py``` and input your MQTT broker address and serial port of the Arduino
+6. Run the script ```python3 powermonmqtt.py``` and watch the device show up in your Home Assistant MQTT integration.
+
 
 ATmega (Arduino) decoding of Blue Line Innovations
 [PowerCost Monitor™](http://www.bluelineinnovations.com/powercost-monitor-2
@@ -172,11 +187,7 @@ comments for requirements.
 
 Arduino boards reset if a new serial connection is made. It's by
 design more than anything else, but is annoying if you're making many
-short logging runs. In theory, for an Arduino Uno, you can put a 10 µF
-capacitor across, but I haven't had much success with that.
-
-As I'm only logging a file once a day, it's not so much of a problem
-for me.
+short logging runs. 
 
 ## ADDITIONAL NOTES ##
 
@@ -186,11 +197,3 @@ values. The temperature sensor can be inaccurate anyway, as it's in a
 black box often in full sun, and it will often read +10°C over
 ambient.
 
-## BUGS ##
-
-1. Yes, I'm sure there are.
-
-## TODO ##
-
-1. Uninitialized values output 0 rather than “NaN” or something more
-   appropriate.

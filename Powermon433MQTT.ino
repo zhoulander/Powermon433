@@ -22,6 +22,10 @@
  General messing about and reformatting 
  by Stewart C. Russell, scruss.com
  https://github.com/scruss/Powermon433
+
+ Modified output to be json-like and to ignore 0 Temps
+ by Brian Zhou
+ https://github.com/zhoulander/Powermon433MQTT
  
  */
 
@@ -37,7 +41,7 @@
  - it is likely that yours is different.
  see README.md on how to check yours and set it here.
  */
-#define DEFAULT_TX_ID 0xfff8
+#define DEFAULT_TX_ID 0x7028
 
 /*
  TX_ID_LOCK - 
@@ -240,7 +244,7 @@ static void decodePowermon(uint16_t val16)
   case OOK_PACKET_INSTANT:
     // val16 is the number of milliseconds between blinks
     // Each blink is one watt hour consumed
-    g_RxWatts = 3600000UL / val16;
+    g_RxWatts = (3600000UL / val16) * 1.0;
     break;
 
   case OOK_PACKET_TEMP:
@@ -286,7 +290,7 @@ static void decodeRxPacket(void)
   }
   else
   {
-    Serial.println(F("# CRC ERR"));
+    Serial.println(F("{'log':'CRC ERR'}"));
   }
 }
 
@@ -328,38 +332,41 @@ static void ookRx(void)
     g_PrintTime_ms = millis();
     g_PrintTimeDelta_ms = g_PrintTime_ms - g_PrevPrintTime_ms;
 
-    Serial.print(F("PrintDelta_ms: ")); 
+    Serial.print(F("{'PrintDelta_ms': ")); 
     Serial.print(g_PrintTimeDelta_ms, DEC);
     // this can roll over, so don't print   
     // Serial.print(F(" Energy_Wh: ")); 
     // Serial.print(g_RxWattHours, DEC);  
-    Serial.print(F(" Total_Energy_Wh: ")); 
+    Serial.print(F(", 'Total_Energy_Wh':")); 
     Serial.print(g_TotalRxWattHours, DEC);
-    Serial.print(F(" Power_W: ")); 
+    Serial.print(F(", 'Power_W':")); 
     Serial.print(g_RxWatts, DEC);
-#if defined(TEMPERATURE_F)
-    Serial.print(F(" Temp_F: "));
-#else 
-    Serial.print(F(" Temp_C: "));
-#endif /* TEMPERATURE_F */ 
-    Serial.println(g_RxTemperature, DEC);
 
+    if (g_RxTemperature > 0) {
+#if defined(TEMPERATURE_F)
+      Serial.print(F(", 'Temp_F':"));
+#else 
+      Serial.print(F(", 'Temp_C': "));
+#endif /* TEMPERATURE_F */ 
+      Serial.print(g_RxTemperature, DEC);
+    }
+    Serial.println(F("}"));
     g_RxDirty = false;
   }
   else if (g_RxLast != 0 && (millis() - g_RxLast) > 32000U) { 
-    Serial.println(F("# Missed Packet"));
+    Serial.println(F("{'log':'Missed Packet'}"));
     g_RxLast = millis();
   }
 }
 
 void setup() {
   Serial.begin(38400);
-  Serial.println(F("# Powermon433 built "__DATE__" "__TIME__));
-  Serial.print(F("# Listening for Sensor ID: 0x"));
-  Serial.println(DEFAULT_TX_ID, HEX);
+  Serial.print(F("{'sensor':'0x"));
+  Serial.print(DEFAULT_TX_ID, HEX);
+  Serial.println(F("'}"));
 
   if (rf69ook_init())
-    Serial.println(F("# RF69 initialized"));
+    Serial.println(F("{'log':'RF69 initialized'}"));
 
   rxSetup();
 
@@ -373,12 +380,3 @@ void loop()
 {
   ookRx();
 }
-
-
-
-
-
-
-
-
-
